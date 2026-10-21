@@ -1,0 +1,47 @@
+services:
+  nilabiru-rustfs:
+    image: rustfs/rustfs:1.0.1
+    container_name: nilabiru-rustfs
+    restart: unless-stopped
+    user: "0:0"
+    ports:
+      - "${TAILSCALE_IP}:9000:9000"
+      - "${TAILSCALE_IP}:9002:9001"
+    environment:
+      - RUSTFS_ACCESS_KEY=${RUSTFS_ACCESS_KEY}
+      - RUSTFS_SECRET_KEY=${RUSTFS_SECRET_KEY}
+      - RUSTFS_VOLUMES=/data
+      - RUSTFS_ADDRESS=0.0.0.0:9000
+      - RUSTFS_CONSOLE_ADDRESS=0.0.0.0:9001
+      - RUSTFS_CONSOLE_ENABLE=true
+    volumes:
+      - /sata-storage/rustfs-data:/data
+      - rustfs-logs:/app/logs
+
+  nilabiru-nextcloud:
+    image: nextcloud:29-apache
+    container_name: nilabiru-nextcloud
+    restart: unless-stopped
+    ports:
+      - "${TAILSCALE_IP}:8080:80"
+    environment:
+      - NC_setup_create_db_user=false
+      - POSTGRES_HOST=${POSTGRES_HOST}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${NEXTCLOUD_DB_NAME}
+      - NEXTCLOUD_ADMIN_USER=${NEXTCLOUD_ADMIN_USER}
+      - NEXTCLOUD_ADMIN_PASSWORD=${NEXTCLOUD_ADMIN_PASSWORD}
+      - NEXTCLOUD_TRUSTED_DOMAINS=${NEXTCLOUD_TRUSTED_DOMAINS}
+      - REDIS_HOST=${REDIS_HOST}
+      - REDIS_HOST_PASSWORD=${REDIS_PASSWORD}
+      - NC_OVERWRITEPROTOCOL=https
+      - NC_OVERWRITEHOST=${NC_OVERWRITEHOST}
+      - NC_TRUSTED_PROXIES=${NC_TRUSTED_PROXIES}
+    volumes:
+      - nextcloud-data:/var/www/html
+      - /sata-storage/nextcloud-files:/var/www/html/data
+
+volumes:
+  rustfs-logs:
+  nextcloud-data:
