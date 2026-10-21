@@ -1,0 +1,7 @@
+bindPort = 7000
+auth.token = "{{ .Envs.FRP_TOKEN }}"
+
+webServer.addr = "0.0.0.0"
+webServer.port = 7500
+webServer.user = "{{ .Envs.FRP_USER }}"
+webServer.password = "{{ .Envs.FRP_PASSWORD }}"

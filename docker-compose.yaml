@@ -1,0 +1,17 @@
+services:
+  nilabiru-frps:
+    image: fatedier/frps:v0.69.1
+    container_name: nilabiru-frps
+    restart: unless-stopped
+    command: ["-c", "/etc/frp/frps.toml"]
+    environment:
+      - FRP_TOKEN=${FRP_TOKEN}
+      - FRP_USER=${FRP_USER}
+      - FRP_PASSWORD=${FRP_PASSWORD}
+    ports:
+      - "7000:7000"
+      - "80:80"
+      - "443:443"
+      - "7500:7500"
+    volumes:
+      - ./frps.toml:/etc/frp/frps.toml:ro
