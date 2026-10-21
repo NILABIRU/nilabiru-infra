@@ -1,4 +1,4 @@
-# Nilabiru FRP
+# Nilabiru FRPS
 
 A self-hosted reverse proxy server for the Nilabiru ecosystem, running FRP Server (frps) in a single Docker Compose setup with a simple deploy script.
 
