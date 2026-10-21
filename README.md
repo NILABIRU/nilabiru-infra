@@ -35,7 +35,7 @@ All services run on the default Docker Compose network and use `restart: unless-
 ### 1. Clone the repository
 
 ```bash
-git clone https://github.com/NILABIRU/nilabiru-database.git
+git clone -b nilabiru-database https://github.com/NILABIRU/nilabiru-infra.git "nilabiru-database"
 cd nilabiru-database
 ```
 
@@ -106,19 +106,6 @@ All services are accessible only via the Tailscale IP of the server.
 | MariaDB    | `<TAILSCALE_IP>:3306`  |
 | PostgreSQL | `<TAILSCALE_IP>:5432`  |
 | MongoDB    | `<TAILSCALE_IP>:27017` |
-
-Example connections:
-
-```bash
-# MariaDB
-mysql -h <TAILSCALE_IP> -P 3306 -u <MARIADB_USER> -p
-
-# PostgreSQL
-psql -h <TAILSCALE_IP> -p 5432 -U <POSTGRES_USER> -d <POSTGRES_DB>
-
-# MongoDB
-mongosh "mongodb://<MONGO_ROOT_USERNAME>:<MONGO_ROOT_PASSWORD>@<TAILSCALE_IP>:27017"
-```
 
 ---
 
