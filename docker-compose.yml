@@ -25,17 +25,17 @@ services:
     ports:
       - "${TAILSCALE_IP}:8080:80"
     environment:
-      - NC_setup_create_db_user=false
       - POSTGRES_HOST=${POSTGRES_HOST}
       - POSTGRES_USER=${POSTGRES_USER}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
       - POSTGRES_DB=${NEXTCLOUD_DB_NAME}
-      - NEXTCLOUD_TRUSTED_DOMAINS=${NEXTCLOUD_TRUSTED_DOMAINS}
       - REDIS_HOST=${REDIS_HOST}
       - REDIS_HOST_PASSWORD=${REDIS_PASSWORD}
-      - NC_OVERWRITEPROTOCOL=https
-      - NC_OVERWRITEHOST=${NC_OVERWRITEHOST}
-      - NC_TRUSTED_PROXIES=${NC_TRUSTED_PROXIES}
+      - NEXTCLOUD_TRUSTED_DOMAINS=${NEXTCLOUD_TRUSTED_DOMAINS}
+      - OVERWRITEPROTOCOL=https
+      - OVERWRITEHOST=${NC_OVERWRITEHOST}
+      - OVERWRITECLIURL=https://${NC_OVERWRITEHOST}
+      - TRUSTED_PROXIES=${NC_TRUSTED_PROXIES}
     volumes:
       - nextcloud-data:/var/www/html
       - /sata-storage/nextcloud-files:/var/www/html/data
