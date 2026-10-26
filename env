@@ -1,0 +1,16 @@
+# Tailscale
+TAILSCALE_IP=
+
+# Gitea - PostgreSQL (external)
+GITEA_DB_HOST=
+GITEA_DB_NAME=
+GITEA_DB_USER=
+GITEA_DB_PASSWORD=
+
+# Gitea - Server
+GITEA_DOMAIN=
+GITEA_ROOT_URL=
+
+# Gitea Actions runner
+GITEA_RUNNER_NAME=
+GITEA_RUNNER_REGISTRATION_TOKEN=
