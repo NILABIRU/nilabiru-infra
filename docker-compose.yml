@@ -19,7 +19,7 @@ services:
       - rustfs-logs:/app/logs
 
   nilabiru-nextcloud:
-    image: nextcloud:31-apache
+    image: nextcloud:32-apache
     container_name: nilabiru-nextcloud
     restart: unless-stopped
     ports:
