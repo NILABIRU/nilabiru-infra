@@ -1,6 +1,6 @@
 services:
   nilabiru-gitea:
-    image: gitea/gitea:1.24.0
+    image: gitea/gitea:1.26.4
     container_name: nilabiru-gitea
     restart: unless-stopped
     ports:
@@ -25,7 +25,7 @@ services:
       - /sata-storage/gitea-data:/data
 
   nilabiru-act-runner:
-    image: gitea/act_runner:0.2.11
+    image: gitea/act_runner:0.6.1
     container_name: nilabiru-act-runner
     restart: unless-stopped
     environment:
@@ -40,5 +40,4 @@ services:
         condition: service_started
 
 volumes:
-  gitea-data:
   act-runner-data:
