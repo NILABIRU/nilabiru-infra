@@ -6,7 +6,7 @@ A Docker Compose setup for the Portainer Agent, letting a central Portainer serv
 
 ## Overview
 
-**Nilabiru Portainer Agent** runs a single container, the [Portainer Agent](https://docs.portainer.io/admin/environments/add/docker/agent), on a remote server. Once the agent is running, a Portainer server can connect to it and manage that server's containers, images, networks, and volumes from one central dashboard. Deployment is handled by a single `deploy.sh` script.
+**Nilabiru Portainer Agent** runs a single container, the [Portainer Agent](https://docs.portainer.io/admin/environments/add/docker/agent), on a remote server. Once the agent is running, a Portainer server can connect to it and manage that server's containers, images, networks, and volumes from one central dashboard. The published port is bound to the server's Tailscale IP, so the agent is reachable only over your private Tailscale network. Deployment is handled by a single `deploy.sh` script.
 
 ---
 
@@ -14,11 +14,9 @@ A Docker Compose setup for the Portainer Agent, letting a central Portainer serv
 
 | Service                      | Image                    | Port(s) | Description                                                              |
 | ---------------------------- | ------------------------ | ------- | ------------------------------------------------------------------------ |
-| **nilabiru-portainer-agent** | `portainer/agent:2.42.0` | `9001`  | Agent that lets a Portainer server manage this host's Docker environment |
+| **nilabiru-portainer-agent** | `portainer/agent:2.45.2` | `9001`  | Agent that lets a Portainer server manage this host's Docker environment |
 
-The container uses `restart: unless-stopped` and runs on the default Docker Compose network.
-
-> **Warning:** Unlike the other Nilabiru stacks, port `9001` is published on **all network interfaces** — it is not bound to the Tailscale IP. The agent has full control over the host's Docker daemon, so restrict access to this port to your Portainer server only (for example with a firewall rule such as `ufw`), or bind it to a private IP in `docker-compose.yml`.
+The container uses `restart: unless-stopped` and runs on the default Docker Compose network. Port `9001` is bound to the Tailscale IP (`TAILSCALE_IP`) — it is not exposed on public network interfaces.
 
 ---
 
@@ -26,8 +24,9 @@ The container uses `restart: unless-stopped` and runs on the default Docker Comp
 
 - Docker Engine `20.10+`
 - Docker Compose `v2+`
-- A running Portainer server that can reach this host on port `9001`
-- The agent version should match the Portainer server version (`2.42.0`)
+- Tailscale installed and connected on this server and on the Portainer server
+- A running Portainer server that can reach this host's Tailscale IP on port `9001`
+- The agent version should match the Portainer server version (`2.45.2`)
 
 ---
 
@@ -40,9 +39,24 @@ git clone -b nilabiru-portainer-agent https://github.com/NILABIRU/nilabiru-infra
 cd nilabiru-portainer-agent
 ```
 
-### 2. Start the agent
+### 2. Configure environment variables
 
-This stack needs no environment variables or `.env` file. Start it with the provided deploy script:
+Copy the provided `env` file and fill in the value:
+
+```bash
+cp env .env
+```
+
+Then edit `.env`:
+
+```env
+# Tailscale
+TAILSCALE_IP=
+```
+
+### 3. Start the agent
+
+The recommended way is the provided deploy script:
 
 ```bash
 chmod +x deploy.sh
@@ -67,20 +81,22 @@ To verify it is running:
 docker compose ps
 ```
 
-### 3. Connect it to your Portainer server
+### 4. Connect it to your Portainer server
 
 1. In the Portainer web UI, go to **Environments → Add environment**.
 2. Choose **Docker Standalone** and then **Agent**.
-3. Enter a name and the environment address: `<SERVER_IP>:9001`.
+3. Enter a name and the environment address: `<TAILSCALE_IP>:9001`.
 4. Click **Connect**.
 
 ---
 
 ## Service Access
 
-| Service         | Address            |
-| --------------- | ------------------ |
-| Portainer Agent | `<SERVER_IP>:9001` |
+The agent is accessible only via the Tailscale IP of the server.
+
+| Service         | Address               |
+| --------------- | --------------------- |
+| Portainer Agent | `<TAILSCALE_IP>:9001` |
 
 The agent has no web interface of its own — it is only used by a Portainer server.
 
