@@ -1,3 +1,6 @@
+# Tailscale
+TAILSCALE_IP=
+
 # FRP
 FRP_TOKEN=
 FRP_USER=

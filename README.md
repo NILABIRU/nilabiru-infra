@@ -6,7 +6,7 @@ A self-hosted reverse proxy server for the Nilabiru ecosystem, running FRP Serve
 
 ## Overview
 
-**Nilabiru FRP** provisions and manages an FRP server (`frps`) running in an isolated Docker container. The server is configured through a `frps.toml` file mounted into the container, and its credentials are passed in as environment variables. Deployment is handled by a single `deploy.sh` script.
+**Nilabiru FRPS** provisions and manages an FRP server (`frps`) running in an isolated Docker container. The server is configured through a `frps.toml` file mounted into the container, and its credentials are passed in as environment variables. Port `7500` is bound to the server's Tailscale IP, so it is reachable only over your private Tailscale network, while ports `7000`, `80`, and `443` are published on all interfaces. Deployment is handled by a single `deploy.sh` script.
 
 ---
 
@@ -16,7 +16,7 @@ A self-hosted reverse proxy server for the Nilabiru ecosystem, running FRP Serve
 | ----------------- | ----------------------- | --------------------------- | ------------------------------------------------------------------------------- |
 | **nilabiru-frps** | `fatedier/frps:v0.69.1` | `7000`, `80`, `443`, `7500` | FRP server configured via `frps.toml`, with token and user/password credentials |
 
-The service runs on the default Docker Compose network and uses `restart: unless-stopped`. All ports are published directly on the host (`0.0.0.0`), not bound to a specific IP.
+The service runs on the default Docker Compose network and uses `restart: unless-stopped`. Port `7500` is bound to the Tailscale IP (`TAILSCALE_IP`). Ports `7000`, `80`, and `443` are published directly on the host (`0.0.0.0`), not bound to a specific IP.
 
 ---
 
@@ -24,8 +24,9 @@ The service runs on the default Docker Compose network and uses `restart: unless
 
 - Docker Engine `20.10+`
 - Docker Compose `v2+`
+- Tailscale installed and connected on the server and on the machines that access port `7500`
 - A `frps.toml` configuration file in the project root
-- Host ports `7000`, `80`, `443`, and `7500` free and reachable
+- Host ports `7000`, `80`, and `443` free and reachable
 
 ---
 
@@ -49,6 +50,9 @@ cp env .env
 Then edit `.env`:
 
 ```env
+# Tailscale
+TAILSCALE_IP=
+
 # FRP
 FRP_TOKEN=
 FRP_USER=
@@ -90,12 +94,12 @@ docker compose ps
 
 ## Service Access
 
-| Port   | Address            |
-| ------ | ------------------ |
-| `7000` | `<SERVER_IP>:7000` |
-| `80`   | `<SERVER_IP>:80`   |
-| `443`  | `<SERVER_IP>:443`  |
-| `7500` | `<SERVER_IP>:7500` |
+| Port   | Address               | Reachable from         |
+| ------ | --------------------- | ---------------------- |
+| `7000` | `<SERVER_IP>:7000`    | Public network         |
+| `80`   | `<SERVER_IP>:80`      | Public network         |
+| `443`  | `<SERVER_IP>:443`     | Public network         |
+| `7500` | `<TAILSCALE_IP>:7500` | Tailscale network only |
 
 ---
 
