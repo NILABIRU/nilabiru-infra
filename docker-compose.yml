@@ -1,0 +1,13 @@
+services:
+  nilabiru-uptime-kuma:
+    image: louislam/uptime-kuma:1.23.17
+    container_name: nilabiru-uptime-kuma
+    restart: unless-stopped
+    ports:
+      - "${TAILSCALE_IP}:3001:3001"
+    volumes:
+      - uptime-kuma-data:/app/data
+
+volumes:
+  uptime-kuma-data:
+    name: nilabiru-monitoring_uptime-kuma-data

@@ -1,47 +1,22 @@
-# Nilabiru Infra
+# Nilabiru Uptime Kuma
 
-Infrastructure-as-code for the Nilabiru ecosystem. This repository holds a collection of self-hosted Docker Compose stacks, each kept on its own branch.
+A minimal self-hosted uptime monitoring setup for the Nilabiru ecosystem, running [Uptime Kuma](https://github.com/louislam/uptime-kuma) in Docker Compose with a simple deploy script.
 
 ---
 
 ## Overview
 
-The `main` branch contains only this README. Every stack lives in a dedicated branch with its own `docker-compose.yml`, environment template, and README. To use a stack, clone the repository on the branch you need.
+**Nilabiru Uptime Kuma** runs Uptime Kuma to watch services (HTTP, TCP, ping, and more) and send notifications when something goes down. The published port is bound to the server's Tailscale IP, so the web interface is reachable only over your private Tailscale network.
 
 ---
 
-## Stacks
+## Services
 
-| Branch                     | Description                                           |
-| -------------------------- | ----------------------------------------------------- |
-| `nilabiru-gateway`         | Portainer, Nginx Proxy Manager, and FRP client (frpc) |
-| `nilabiru-database`        | MariaDB, PostgreSQL, and MongoDB                      |
-| `nilabiru-cache-mq`        | Redis (cache) and RabbitMQ (message queue)            |
-| `nilabiru-storage`         | RustFS (S3-compatible object storage) and Nextcloud   |
-| `nilabiru-frps`            | FRP server (frps)                                     |
-| `nilabiru-portainer-agent` | Portainer Agent                                       |
+| Service                  | Image                          | Port   | Description                         |
+| ------------------------ | ------------------------------ | ------ | ----------------------------------- |
+| **nilabiru-uptime-kuma** | `louislam/uptime-kuma:1.23.17` | `3001` | Uptime monitoring and notifications |
 
-Refer to the README of each branch for its services, environment variables, and deployment steps.
-
----
-
-## Getting Started
-
-Clone the branch of the stack you want to deploy:
-
-```bash
-git clone -b <branch-name> https://github.com/NILABIRU/nilabiru-infra.git "<folder-name>"
-cd <folder-name>
-```
-
-For example, to deploy the database stack:
-
-```bash
-git clone -b nilabiru-database https://github.com/NILABIRU/nilabiru-infra.git "nilabiru-database"
-cd nilabiru-database
-```
-
-Then follow the instructions in that branch's README.
+The service uses `restart: unless-stopped`. The port is bound to the Tailscale IP (`TAILSCALE_IP`) and is not exposed on public network interfaces.
 
 ---
 
@@ -49,7 +24,70 @@ Then follow the instructions in that branch's README.
 
 - Docker Engine `20.10+`
 - Docker Compose `v2+`
-- Tailscale installed and connected on the server and all client machines (used by most stacks to bind ports to the Tailscale IP)
+- Tailscale installed and connected on the server and all client machines
+
+---
+
+## Getting Started
+
+### 1. Clone the repository
+
+```bash
+git clone -b nilabiru-uptime-kuma https://github.com/NILABIRU/nilabiru-infra.git "nilabiru-uptime-kuma"
+cd nilabiru-uptime-kuma
+```
+
+### 2. Configure environment variables
+
+```bash
+cp env .env
+```
+
+Then edit `.env`:
+
+```env
+# Tailscale
+TAILSCALE_IP=
+```
+
+### 3. Start the stack
+
+```bash
+chmod +x deploy.sh
+./deploy.sh
+```
+
+`deploy.sh` stops on the first error (`set -e`) and does the following:
+
+1. Validates the Compose configuration with `docker compose config --quiet`.
+2. Deploys/redeploys all services with `docker compose up -d --remove-orphans --build`.
+3. Always runs a cleanup on exit (even if a step fails) that removes dangling images with `docker image prune -f`.
+
+To verify the service is running:
+
+```bash
+docker compose ps
+```
+
+---
+
+## Service Access
+
+| Service     | Address                      |
+| ----------- | ---------------------------- |
+| Uptime Kuma | `http://<TAILSCALE_IP>:3001` |
+
+Create the Uptime Kuma admin account on first visit.
+
+---
+
+## Data Persistence
+
+| Volume             | Type         | Service     | Container path |
+| ------------------ | ------------ | ----------- | -------------- |
+| `uptime-kuma-data` | Named volume | Uptime Kuma | `/app/data`    |
+
+> **Note:** The volume is pinned to the name `nilabiru-monitoring_uptime-kuma-data` in `docker-compose.yml` so existing data is kept after the project rename. On a fresh install you can change `name:` to any value you like before the first start.
 
 ---
 
