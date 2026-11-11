@@ -1,20 +1,20 @@
-# Nilabiru Uptime Kuma
+# Nilabiru 9Router
 
-A minimal self-hosted uptime monitoring setup for the Nilabiru ecosystem, running [Uptime Kuma](https://github.com/louislam/uptime-kuma) in Docker Compose with a simple deploy script.
+A minimal self-hosted AI router setup for the Nilabiru ecosystem, running [9Router](https://github.com/decolua/9router) in Docker Compose with a simple deploy script.
 
 ---
 
 ## Overview
 
-**Nilabiru Uptime Kuma** runs Uptime Kuma to watch services (HTTP, TCP, ping, and more) and send notifications when something goes down. The published port is bound to the server's Tailscale IP, so the web interface is reachable only over your private Tailscale network.
+**Nilabiru 9Router** runs 9Router to unify multiple AI providers (subscriptions, low-cost, and free models) behind a single OpenAI-compatible API endpoint. The published port is bound to the server's Tailscale IP, so the dashboard and API are reachable only over your private Tailscale network. API key validation is enforced on the `/v1` endpoint.
 
 ---
 
 ## Services
 
-| Service                  | Image                          | Port   | Description                         |
-| ------------------------ | ------------------------------ | ------ | ----------------------------------- |
-| **nilabiru-uptime-kuma** | `louislam/uptime-kuma:1.23.17` | `3001` | Uptime monitoring and notifications |
+| Service              | Image                     | Port    | Description                                        |
+| -------------------- | ------------------------- | ------- | -------------------------------------------------- |
+| **nilabiru-9router** | `decolua/9router:0.5.116` | `20128` | AI router with dashboard and OpenAI-compatible API |
 
 The service uses `restart: unless-stopped`. The port is bound to the Tailscale IP (`TAILSCALE_IP`) and is not exposed on public network interfaces.
 
@@ -33,8 +33,8 @@ The service uses `restart: unless-stopped`. The port is bound to the Tailscale I
 ### 1. Clone the repository
 
 ```bash
-git clone -b nilabiru-uptime-kuma https://github.com/NILABIRU/nilabiru-infra.git "nilabiru-uptime-kuma"
-cd nilabiru-uptime-kuma
+git clone -b nilabiru-9router https://github.com/NILABIRU/nilabiru-infra.git "nilabiru-9router"
+cd nilabiru-9router
 ```
 
 ### 2. Configure environment variables
@@ -48,6 +48,22 @@ Then edit `.env`:
 ```env
 # Tailscale
 TAILSCALE_IP=
+
+# 9Router
+JWT_SECRET=
+INITIAL_PASSWORD=
+```
+
+| Variable           | Description                                                      |
+| ------------------ | ---------------------------------------------------------------- |
+| `TAILSCALE_IP`     | Tailscale IP of the server the port is bound to                  |
+| `JWT_SECRET`       | Secret used to sign dashboard sessions (use a long random value) |
+| `INITIAL_PASSWORD` | Initial dashboard login password                                 |
+
+Generate a random `JWT_SECRET` with:
+
+```bash
+openssl rand -hex 32
 ```
 
 ### 3. Start the stack
@@ -73,21 +89,23 @@ docker compose ps
 
 ## Service Access
 
-| Service     | Address                      |
-| ----------- | ---------------------------- |
-| Uptime Kuma | `http://<TAILSCALE_IP>:3001` |
+| Service               | Address                                 |
+| --------------------- | --------------------------------------- |
+| 9Router Dashboard     | `http://<TAILSCALE_IP>:20128/dashboard` |
+| OpenAI-compatible API | `http://<TAILSCALE_IP>:20128/v1`        |
 
-Create the Uptime Kuma admin account on first visit.
+Log in to the dashboard with `INITIAL_PASSWORD`, then change the password and create an API key. Because `REQUIRE_API_KEY` is set to `true`, every request to `/v1` must include a valid API key.
 
 ---
 
 ## Data Persistence
 
-| Volume             | Type         | Service     | Container path |
-| ------------------ | ------------ | ----------- | -------------- |
-| `uptime-kuma-data` | Named volume | Uptime Kuma | `/app/data`    |
+| Volume                   | Type         | Service | Container path   |
+| ------------------------ | ------------ | ------- | ---------------- |
+| `nilabiru-9router_data`  | Named volume | 9Router | `/app/data`      |
+| `nilabiru-9router_usage` | Named volume | 9Router | `/root/.9router` |
 
-> **Note:** The volume is pinned to the name `nilabiru-monitoring_uptime-kuma-data` in `docker-compose.yml` so existing data is kept after the project rename. On a fresh install you can change `name:` to any value you like before the first start.
+> **Note:** Both volumes are pinned to fixed names in `docker-compose.yml`, so data is kept regardless of the Compose project name. Do not run `docker compose down -v` unless you intend to wipe provider connections, API keys, and usage history.
 
 ---
 

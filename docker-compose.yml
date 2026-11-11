@@ -1,13 +1,22 @@
 services:
-  nilabiru-uptime-kuma:
-    image: louislam/uptime-kuma:1.23.17
-    container_name: nilabiru-uptime-kuma
+  nilabiru-9router:
+    image: decolua/9router:0.5.116
+    container_name: nilabiru-9router
     restart: unless-stopped
     ports:
-      - "${TAILSCALE_IP}:3001:3001"
+      - "${TAILSCALE_IP}:20128:20128"
+    environment:
+      DATA_DIR: /app/data
+      HOSTNAME: 0.0.0.0
+      JWT_SECRET: ${JWT_SECRET}
+      INITIAL_PASSWORD: ${INITIAL_PASSWORD}
+      REQUIRE_API_KEY: "true"
     volumes:
-      - uptime-kuma-data:/app/data
+      - 9router-data:/app/data
+      - 9router-usage:/root/.9router
 
 volumes:
-  uptime-kuma-data:
-    name: nilabiru-monitoring_uptime-kuma-data
+  9router-data:
+    name: nilabiru-9router_data
+  9router-usage:
+    name: nilabiru-9router_usage
