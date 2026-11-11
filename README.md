@@ -18,6 +18,8 @@ The `main` branch contains only this README. Every stack lives in a dedicated br
 | `nilabiru-database`        | MariaDB, PostgreSQL, and MongoDB                      |
 | `nilabiru-cache-mq`        | Redis (cache) and RabbitMQ (message queue)            |
 | `nilabiru-storage`         | RustFS (S3-compatible object storage) and Nextcloud   |
+| `nilabiru-git`             | Gitea (Git hosting) and Gitea Actions runner          |
+| `nilabiru-uptime-kuma`     | Uptime Kuma (uptime monitoring and notifications)     |
 | `nilabiru-frps`            | FRP server (frps)                                     |
 | `nilabiru-portainer-agent` | Portainer Agent                                       |
 
