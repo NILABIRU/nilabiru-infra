@@ -12,16 +12,17 @@ The `main` branch contains only this README. Every stack lives in a dedicated br
 
 ## Stacks
 
-| Branch                     | Description                                           |
-| -------------------------- | ----------------------------------------------------- |
-| `nilabiru-gateway`         | Portainer, Nginx Proxy Manager, and FRP client (frpc) |
-| `nilabiru-database`        | MariaDB, PostgreSQL, and MongoDB                      |
-| `nilabiru-cache-mq`        | Redis (cache) and RabbitMQ (message queue)            |
-| `nilabiru-storage`         | RustFS (S3-compatible object storage) and Nextcloud   |
-| `nilabiru-git`             | Gitea (Git hosting) and Gitea Actions runner          |
-| `nilabiru-uptime-kuma`     | Uptime Kuma (uptime monitoring and notifications)     |
-| `nilabiru-frps`            | FRP server (frps)                                     |
-| `nilabiru-portainer-agent` | Portainer Agent                                       |
+| Branch                     | Description                                                      |
+| -------------------------- | ---------------------------------------------------------------- |
+| `nilabiru-gateway`         | Portainer, Nginx Proxy Manager, and FRP client (frpc)            |
+| `nilabiru-database`        | MariaDB, PostgreSQL, and MongoDB                                 |
+| `nilabiru-cache-mq`        | Redis (cache) and RabbitMQ (message queue)                       |
+| `nilabiru-storage`         | RustFS (S3-compatible object storage) and Nextcloud              |
+| `nilabiru-git`             | Gitea (Git hosting) and Gitea Actions runner                     |
+| `nilabiru-uptime-kuma`     | Uptime Kuma (uptime monitoring and notifications)                |
+| `nilabiru-9router`         | 9Router (OpenAI-compatible AI router for multiple LLM providers) |
+| `nilabiru-frps`            | FRP server (frps)                                                |
+| `nilabiru-portainer-agent` | Portainer Agent                                                  |
 
 Refer to the README of each branch for its services, environment variables, and deployment steps.
 
