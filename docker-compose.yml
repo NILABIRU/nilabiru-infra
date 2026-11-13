@@ -15,8 +15,24 @@ services:
       - 9router-data:/app/data
       - 9router-usage:/root/.9router
 
+  headroom:
+    container_name: nilabiru-headroom
+    restart: unless-stopped
+    build:
+      context: .
+      dockerfile_inline: |
+        FROM python:3.12-slim
+        RUN pip install --no-cache-dir "headroom-ai[proxy]"
+        ENV HEADROOM_TELEMETRY=off
+        EXPOSE 8787
+        CMD ["headroom", "proxy", "--host", "0.0.0.0", "--port", "8787"]
+    volumes:
+      - headroom-data:/root/.headroom
+
 volumes:
   9router-data:
     name: nilabiru-9router_data
   9router-usage:
     name: nilabiru-9router_usage
+  headroom-data:
+    name: nilabiru-headroom_data
