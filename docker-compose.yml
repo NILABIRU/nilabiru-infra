@@ -24,12 +24,13 @@ services:
       context: .
       dockerfile_inline: |
         FROM python:3.12-slim
-        RUN pip install --no-cache-dir "headroom-ai[proxy]"
+        RUN pip install --no-cache-dir "headroom-ai[proxy,ml]"
         ENV HEADROOM_TELEMETRY=off
         EXPOSE 8787
         CMD ["headroom", "proxy", "--host", "0.0.0.0", "--port", "8787"]
     volumes:
       - headroom-data:/root/.headroom
+      - headroom-hf-cache:/root/.cache/huggingface
 
 volumes:
   9router-data:
@@ -38,3 +39,5 @@ volumes:
     name: nilabiru-9router_usage
   headroom-data:
     name: nilabiru-headroom_data
+headroom-hf-cache:
+    name: nilabiru-headroom_hfcache
