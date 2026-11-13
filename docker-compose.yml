@@ -20,6 +20,7 @@ services:
     restart: unless-stopped
     environment:
       HEADROOM_ALLOW_UNAUTHENTICATED_BIND: "1"
+      HEADROOM_COMPRESS_ALLOW_REMOTE: "1"
     build:
       context: .
       dockerfile_inline: |
