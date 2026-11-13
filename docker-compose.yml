@@ -18,6 +18,8 @@ services:
   headroom:
     container_name: nilabiru-headroom
     restart: unless-stopped
+    environment:
+      HEADROOM_ALLOW_UNAUTHENTICATED_BIND: "1"
     build:
       context: .
       dockerfile_inline: |
