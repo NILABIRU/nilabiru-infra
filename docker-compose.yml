@@ -15,6 +15,24 @@ services:
       - 9router-data:/app/data
       - 9router-usage:/root/.9router
 
+  nilabiru-sse-fix:
+    image: node:22-alpine
+    container_name: nilabiru-sse-fix
+    restart: unless-stopped
+    depends_on:
+      - nilabiru-9router
+    environment:
+      TARGET_HOST: nilabiru-9router
+      TARGET_PORT: "20128"
+      LISTEN_HOST: 0.0.0.0
+      LISTEN_PORT: "20129"
+      SPLIT_USAGE: "1"
+    volumes:
+      - ./fix-proxy.mjs:/app/fix-proxy.mjs:ro
+    command: ["node", "/app/fix-proxy.mjs"]
+    ports:
+      - "${TAILSCALE_IP}:20129:20129"
+
   headroom:
     container_name: nilabiru-headroom
     restart: unless-stopped
